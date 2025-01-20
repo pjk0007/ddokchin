@@ -7,12 +7,18 @@ export default function useConnection() {
     useState<RTCPeerConnection | null>(null);
   const [isActive, setIsActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [totalInputTokens, setTotalInputTokens] = useState(0);
+
+  const [totalInputTextTokens, setTotalInputTextTokens] = useState(0);
+  const [totalInputAudioTokens, setTotalInputAudioTokens] = useState(0);
   const [totalCacheTokens, setTotalCacheTokens] = useState(0);
-  const [totalOutputTokens, setTotalOutputTokens] = useState(0);
-  const [recentInputTokens, setRecentInputTokens] = useState(0);
+  const [totalOutputTextTokens, setTotalOutputTextTokens] = useState(0);
+  const [totalOutputAudioTokens, setTotalOutputAudioTokens] = useState(0);
+
+  const [recentInputTextTokens, setRecentInputTextTokens] = useState(0);
+  const [recentInputAudioTokens, setRecentInputAudioTokens] = useState(0);
   const [recentCacheTokens, setRecentCacheTokens] = useState(0);
-  const [recentOutputTokens, setRecentOutputTokens] = useState(0);
+  const [recentOutputTextTokens, setRecentOutputTextTokens] = useState(0);
+  const [recentOutputAudioTokens, setRecentOutputAudioTokens] = useState(0);
 
   const on = useCallback(
     (setLoading: Dispatch<React.SetStateAction<boolean>>) => {
@@ -41,14 +47,29 @@ export default function useConnection() {
         console.log('Received message', msg);
 
         if (msg.type === 'response.done') {
-          const { input_tokens, output_tokens } = msg.response.usage;
-          const { cached_tokens } = msg.response.usage.input_token_details;
-          setTotalInputTokens((prev) => prev + input_tokens);
-          setTotalCacheTokens((prev) => prev + cached_tokens);
-          setTotalOutputTokens((prev) => prev + output_tokens);
-          setRecentInputTokens(input_tokens);
-          setRecentCacheTokens(cached_tokens);
-          setRecentOutputTokens(output_tokens);
+          const { input_token_details, output_token_details } =
+            msg.response.usage;
+          setTotalInputTextTokens(
+            (prev) => prev + input_token_details.text_tokens
+          );
+          setTotalInputAudioTokens(
+            (prev) => prev + input_token_details.audio_tokens
+          );
+          setTotalCacheTokens(
+            (prev) => prev + input_token_details.cached_tokens
+          );
+          setTotalOutputTextTokens(
+            (prev) => prev + output_token_details.text_tokens
+          );
+          setTotalOutputAudioTokens(
+            (prev) => prev + output_token_details.audio_tokens
+          );
+
+          setRecentInputTextTokens(input_token_details.text_tokens);
+          setRecentInputAudioTokens(input_token_details.audio_tokens);
+          setRecentCacheTokens(input_token_details.cached_tokens);
+          setRecentOutputTextTokens(output_token_details.text_tokens);
+          setRecentOutputAudioTokens(output_token_details.audio_tokens);
         }
 
         if (msg.type === 'response.function_call_arguments.done') {
@@ -152,11 +173,15 @@ export default function useConnection() {
     isActive,
     on,
     off,
-    totalInputTokens,
+    totalInputTextTokens,
+    totalInputAudioTokens,
     totalCacheTokens,
-    totalOutputTokens,
-    recentInputTokens,
+    totalOutputTextTokens,
+    totalOutputAudioTokens,
+    recentInputTextTokens,
+    recentInputAudioTokens,
     recentCacheTokens,
-    recentOutputTokens,
+    recentOutputTextTokens,
+    recentOutputAudioTokens,
   };
 }

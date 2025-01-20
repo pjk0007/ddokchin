@@ -91,6 +91,12 @@ main {
   border: 1px solid #ccc;
 }
 
+.total-cost {
+  font-size: 1.2rem;
+  margin-top: 10px;
+  text-align: center;
+}
+
 /* Sticky footer styling */
 footer {
   background-color: #333;
